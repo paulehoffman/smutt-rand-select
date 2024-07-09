@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import hashlib
+import locale
+import select
 import sys
 
 # Hexable strings
@@ -81,23 +83,50 @@ def fill_list(cls):
     else:
       puts("Invalid command")
 
+# BEGIN EXECUTION
+if locale.getlocale()[1].upper() != 'UTF-8':
+  print("Locale not UTF-8")
+  exit(1)
+
 if not sys.flags.utf8_mode:
   print("Not in UTF-8 mode. Aborting.")
   exit(1)
-      
-puts("Welcome to the interactive random selection program")
 
-_S_ = get_input("How many candidates are being selected?", int)
-puts("Performing selection for " + str(_S_) + " candidate(s)")
+# Check if we're being piped data
+if select.select([sys.stdin, ], [], [], 0.0)[0]:
+  if not sys.__stdin__.encoding == 'utf-8':
+    print("STDIN not UTF-8")
+    exit(1)
+  else:
+    candidates = []
+    p_values = []
+    first_loaded = False
 
-puts("Enter candidates")
-candidates = fill_list(Candidate)
+    for line in sys.__stdin__:
+      if len(line.strip()) == 0:
+        first_loaded = True
+        continue
+      if first_loaded:
+        p_values.append(P_value(line.strip()))
+      else:
+        candidates.append(Candidate(line.strip()))
 
-puts("Enter _P_ values")
-p_values = fill_list(P_value)
+else:
+   puts("Enter candidates")
+   candidates = fill_list(Candidate)
+
+   puts("Enter _P_ values")
+   p_values = fill_list(P_value)
+
+puts("Candidates")
+for cc in candidates:
+   print(cc)
+
+puts("_P_ Values")
+for pv in p_values:
+   print(pv)
+
 _D_ = "/" + "/".join([pp.to_hex() for pp in p_values])
-
-puts("_S_:" + str(_S_))
 puts("_D_:" + _D_)
 
 output = []
