@@ -19,29 +19,15 @@ class Hexable():
   def __str__(self):
     return self.ss
 
-  def __repr__(self):
-    return "str:" + self.ss + " hex:" + self.to_hex()
-
 # Outputs a bracketed string
 def puts(out_str):
   print("[" + out_str + "]")
 
-# Takes a prompt string and a type
-# Supported types are str and int > 0
+# Takes a string prompt
 # Returns input of correct type
-def get_input(prompt_str, type=str):
-  while True:
-    puts(prompt_str)
-    ss = input("-->").strip()
-    if type == str:
-      return ss
-    else: # type == int > 0
-      try:
-        ii = int(ss)
-      except:
-        continue
-      if ii > 0:
-        return ii
+def get_input(prompt_str):
+  puts(prompt_str)
+  return input("-->").strip()
 
 # Takes a string name
 # Returns a list of Hexables
@@ -109,11 +95,11 @@ else:
 
 puts("Candidates")
 for cc in candidates:
-   print(cc)
+   puts(str(cc))
 
 puts("_P_ Values")
 for pv in p_values:
-   print(pv)
+   puts(str(pv))
 
 _D_ = "/" + "/".join([pp.to_hex() for pp in p_values])
 puts("_D_:" + _D_)
