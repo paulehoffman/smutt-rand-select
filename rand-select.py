@@ -58,6 +58,23 @@ def fill_list(name):
     else:
       puts("Invalid command")
 
+# Handles STDIN
+def handle_stdin():
+  candidates = []
+  p_values = []
+  top_done = False
+
+  for line in sys.__stdin__:
+    if len(line.strip()) == 0:
+      top_done = True
+      continue
+    if top_done:
+      p_values.append(Hexable(line.strip()))
+    else:
+      candidates.append(Hexable(line.strip()))
+  return candidates, p_values
+
+
 # BEGIN EXECUTION
 if locale.getlocale()[1].upper() != 'UTF-8':
   print("Locale not UTF-8")
@@ -73,19 +90,7 @@ if select.select([sys.stdin, ], [], [], 0.0)[0]:
     print("STDIN not UTF-8")
     exit(1)
   else:
-    candidates = []
-    p_values = []
-    first_loaded = False
-
-    for line in sys.__stdin__:
-      if len(line.strip()) == 0:
-        first_loaded = True
-        continue
-      if first_loaded:
-        p_values.append(Hexable(line.strip()))
-      else:
-        candidates.append(Hexable(line.strip()))
-
+    candidates, p_values = handle_stdin()
 else:
    puts("Candidates")
    candidates = fill_list("candidate")
@@ -93,20 +98,28 @@ else:
    puts("_P_ values")
    p_values = fill_list("_P_ value")
 
+
+if not len(candidates):
+  put("No candidates. Aborting.")
+  exit(1)
+
 puts("Candidates")
 for cc in candidates:
-   puts(str(cc))
+   puts("candidate:" + str(cc) + " hex:" + cc.to_hex())
+
+if not len(p_values):
+  exit(0)
 
 puts("_P_ Values")
 for pv in p_values:
    puts(str(pv))
 
-_D_ = "/" + "/".join([pp.to_hex() for pp in p_values])
-puts("_D_:" + _D_)
+_D_ = "/".join([str(pv) for pv in p_values])
+puts("_D_ = " + _D_)
 
 output = []
 for cc in candidates:
-  output.append((hashlib.sha256(cc.to_hex(_D_).encode("utf8")).hexdigest(), str(cc)))
+  output.append((hashlib.sha256(cc.to_hex("/" + _D_).encode("utf8")).hexdigest(), str(cc)))
 
 for ii in sorted(output, key=lambda hash: hash[0]):
   puts("hash:" + ii[0] + " candidate:" + ii[1])
