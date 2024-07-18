@@ -22,17 +22,6 @@ class Hexable():
   def __repr__(self):
     return "str:" + self.ss + " hex:" + self.to_hex()
 
-# A candidate
-class Candidate(Hexable):
-  def __init__(self, in_str):
-    Hexable.__init__(self, in_str)
-
-# A _P_ value
-class P_value(Hexable):
-  def __init__(self, in_str):
-    Hexable.__init__(self, in_str)
-
-
 # Outputs a bracketed string
 def puts(out_str):
   print("[" + out_str + "]")
@@ -54,21 +43,21 @@ def get_input(prompt_str, type=str):
       if ii > 0:
         return ii
 
-# Takes a class
-# Returns a list filled with objects of passed class
-def fill_list(cls):
+# Takes a string name
+# Returns a list of Hexables
+def fill_list(name):
   rv = []
   while True:
-    prompt = "'A' to add a new " + cls.__name__ + \
-      " || 'D' to delete a " + cls.__name__ + \
-      " || 'L' to list " + cls.__name__ + "s" + \
+    prompt = "'A' to add a new " + name + \
+      " || 'D' to delete a " + name + \
+      " || 'L' to list " + name + "s" + \
       " || 'Q' to quit when finished"
     ss = get_input(prompt)
 
     if "A" == ss.upper():
-      rv.append(cls(get_input("Enter " + cls.__name__)))
+      rv.append(Hexable(get_input("Enter " + name)))
     elif "D" == ss.upper():
-      puts(str(rv.pop(get_input("Enter index of " + cls.__name__ + " to delete", int)-1)) + " deleted")
+      puts(str(rv.pop(get_input("Enter index of " + name + " to delete", int)-1)) + " deleted")
     elif "L" == ss.upper():
       if len(rv) == 0:
         continue
@@ -79,7 +68,7 @@ def fill_list(cls):
       if len(rv) > 0:
         return rv
       else:
-        print(cls.__name__ + " list is empty")
+        print(name + " list is empty")
     else:
       puts("Invalid command")
 
@@ -107,16 +96,16 @@ if select.select([sys.stdin, ], [], [], 0.0)[0]:
         first_loaded = True
         continue
       if first_loaded:
-        p_values.append(P_value(line.strip()))
+        p_values.append(Hexable(line.strip()))
       else:
-        candidates.append(Candidate(line.strip()))
+        candidates.append(Hexable(line.strip()))
 
 else:
-   puts("Enter candidates")
-   candidates = fill_list(Candidate)
+   puts("Candidates")
+   candidates = fill_list("candidate")
 
-   puts("Enter _P_ values")
-   p_values = fill_list(P_value)
+   puts("_P_ values")
+   p_values = fill_list("_P_ value")
 
 puts("Candidates")
 for cc in candidates:
