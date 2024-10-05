@@ -5,6 +5,8 @@ Companion program to "A Verifiable and Reproducible Random Candidate Selection P
 See FUTUREURLGOESHERE for more information
 '''
 
+##### Will need and ICANN-approved license
+
 import hashlib
 import locale
 import select
@@ -61,7 +63,7 @@ def fill_list(name):
       else:
         print(name + " list is empty")
     else:
-      puts("Invalid command")     ##### Should this exit instead?
+      puts("Invalid command")
 
 # Handles STDIN
 def handle_stdin():
@@ -83,18 +85,15 @@ def handle_stdin():
 # Main program start here
 
 if locale.getlocale()[1].upper() != 'UTF-8':
-  print("Locale not UTF-8")
-  exit(1)
+  sys.exit("Locale not UTF-8")
 
 if not sys.flags.utf8_mode:
-  print("Not in UTF-8 mode. Aborting.")
-  exit(1)
+  sys.exit("Not in UTF-8 mode. Aborting.")
 
 # Check if we're being piped data
 if select.select([sys.stdin, ], [], [], 0.0)[0]:
   if not sys.__stdin__.encoding == 'utf-8':
-    print("STDIN not UTF-8")
-    exit(1)
+    sys.exit("STDIN not UTF-8")
   else:
     candidates, p_values = handle_stdin()
 else:
@@ -105,15 +104,14 @@ else:
    p_values = fill_list("_P_ value")
 
 if not len(candidates):
-  puts("No candidates. Aborting.")
-  exit(1)
+  sys.exit("No candidates. Aborting.")
 
 puts("Candidates")
 for cc in candidates:
    puts("candidate:" + str(cc) + " hex:" + cc.to_hex())
 
 if not len(p_values):
-  exit(0)
+  sys.exit(0)
 
 puts("_P_ Values")
 for pv in p_values:
