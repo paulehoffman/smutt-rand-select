@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+'''
+Companion program to "A Verifiable and Reproducible Random Candidate Selection Process"
+See FUTUREURLGOESHERE for more information
+'''
+
+##### Will need and ICANN-approved license
+
 import hashlib
 import locale
 import select
@@ -19,7 +26,7 @@ class Hexable():
   def __str__(self):
     return self.ss
 
-# Outputs a bracketed string
+# Prints a bracketed string
 def puts(out_str):
   print("[" + out_str + "]")
 
@@ -40,17 +47,17 @@ def fill_list(name):
       " || 'Q' to quit when finished"
     ss = get_input(prompt)
 
-    if "A" == ss.upper():
+    if ss.upper() == "A":
       rv.append(Hexable(get_input("Enter " + name)))
-    elif "D" == ss.upper():
+    elif ss.upper() == "D":
       puts(str(rv.pop(get_input("Enter index of " + name + " to delete", int)-1)) + " deleted")
-    elif "L" == ss.upper():
+    elif ss.upper() == "L":
       if len(rv) == 0:
         continue
       else:
         for ii in range(len(rv)):
           puts(str(ii+1) + ": " + str(rv[ii]))
-    elif "Q" == ss.upper():
+    elif ss.upper() == "Q":
       if len(rv) > 0:
         return rv
       else:
@@ -75,20 +82,18 @@ def handle_stdin():
   return candidates, p_values
 
 
-# BEGIN EXECUTION
+# Main program start here
+
 if locale.getlocale()[1].upper() != 'UTF-8':
-  print("Locale not UTF-8")
-  exit(1)
+  sys.exit("Locale not UTF-8")
 
 if not sys.flags.utf8_mode:
-  print("Not in UTF-8 mode. Aborting.")
-  exit(1)
+  sys.exit("Not in UTF-8 mode. Aborting.")
 
 # Check if we're being piped data
 if select.select([sys.stdin, ], [], [], 0.0)[0]:
   if not sys.__stdin__.encoding == 'utf-8':
-    print("STDIN not UTF-8")
-    exit(1)
+    sys.exit("STDIN not UTF-8")
   else:
     candidates, p_values = handle_stdin()
 else:
@@ -98,17 +103,15 @@ else:
    puts("_P_ values")
    p_values = fill_list("_P_ value")
 
-
 if not len(candidates):
-  put("No candidates. Aborting.")
-  exit(1)
+  sys.exit("No candidates. Aborting.")
 
 puts("Candidates")
 for cc in candidates:
    puts("candidate:" + str(cc) + " hex:" + cc.to_hex())
 
 if not len(p_values):
-  exit(0)
+  sys.exit(0)
 
 puts("_P_ Values")
 for pv in p_values:
